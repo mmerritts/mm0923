@@ -1,4 +1,4 @@
-package app.services.enums;
+package app.enums;
 
 public enum Brand {
     STIHL,
