@@ -13,9 +13,16 @@ public class CheckoutRequest {
         Objects.requireNonNull(tool);
         Objects.requireNonNull(checkOutDate);
         this.tool = tool;
-        //TODO: throw exception if rentalDayCount is not valid
+        if (rentalDayCount <= 0) {
+            throw new IllegalArgumentException("The number of rental days requested is invalid." +
+                    " The days requested was " + rentalDayCount + ", but must be number greater than 0");
+        }
         this.rentalDayCount = rentalDayCount;
-        //TODO: throw exception if discountPrecent is not valid
+        if (discountPercent >= 0 && discountPercent <= 100) {
+            throw new IllegalArgumentException("The discount percent requested is invalid . " +
+                    "The discount percent requested was " + discountPercent +
+                    ", but must be number  within the range of 0 - 100");
+        }
         this.discountPercent = discountPercent;
         this.checkOutDate = checkOutDate;
     }
