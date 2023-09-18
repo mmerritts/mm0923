@@ -13,6 +13,8 @@ public class RentalAgreementService {
     }
 
     public RentalAgreementView processCheckoutRequest(CheckoutRequest checkoutRequest) {
+        var chargeDays = getChargeDays(checkoutRequest);
+
         return new RentalAgreementView(
                 checkoutRequest.getTool().getToolCode(),
                 checkoutRequest.getTool().getToolType(),
@@ -21,11 +23,11 @@ public class RentalAgreementService {
                 checkoutRequest.getCheckOutDate(),
                 getDueDate(checkoutRequest),
                 checkoutRequest.getTool().getToolRentalInfo().getDailyCharge(),
-                getChargeDays(checkoutRequest),
-                getPreDiscountCharge(checkoutRequest),
+                chargeDays,
+                getPreDiscountCharge(checkoutRequest, chargeDays),
                 checkoutRequest.getDiscountPercent(),
-                getDiscountAmount(checkoutRequest),
-                getFinalCharge(checkoutRequest));
+                getDiscountAmount(checkoutRequest, chargeDays),
+                getFinalCharge(checkoutRequest, chargeDays));
     }
 
     private LocalDate getDueDate(CheckoutRequest checkoutRequest) {
@@ -34,7 +36,7 @@ public class RentalAgreementService {
 
     private int getChargeDays(CheckoutRequest checkoutRequest) {
         int chargeDays = 0;
-        for(int i = 1; i <= checkoutRequest.getRentalDayCount(); i++) {
+        for (int i = 1; i <= checkoutRequest.getRentalDayCount(); i++) {
             var day = checkoutRequest.getCheckOutDate().plusDays(i);
 
             // skip holidays
@@ -57,22 +59,20 @@ public class RentalAgreementService {
         return chargeDays;
     }
 
-    //TODO: remove getChargeDays() and replace with actual value so charge days
-    // isn't calculated twice. Already called in processCheckoutRequest(...)
-    private BigDecimal getPreDiscountCharge(CheckoutRequest checkoutRequest) {
+    private BigDecimal getPreDiscountCharge(CheckoutRequest checkoutRequest, int chargeDays) {
         return checkoutRequest.getTool().getToolRentalInfo().getDailyCharge()
-                .multiply(BigDecimal.valueOf(getChargeDays(checkoutRequest)))
+                .multiply(BigDecimal.valueOf(chargeDays))
                 .setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
-    private BigDecimal getDiscountAmount(CheckoutRequest checkoutRequest) {
+    private BigDecimal getDiscountAmount(CheckoutRequest checkoutRequest, int chargeDays) {
         double discountPercent = checkoutRequest.getDiscountPercent() * 0.01;
-        return getPreDiscountCharge(checkoutRequest)
+        return getPreDiscountCharge(checkoutRequest, chargeDays)
                 .multiply(BigDecimal.valueOf(discountPercent))
                 .setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
-    private BigDecimal getFinalCharge(CheckoutRequest checkoutRequest) {
-        return getPreDiscountCharge(checkoutRequest).subtract(getDiscountAmount(checkoutRequest));
+    private BigDecimal getFinalCharge(CheckoutRequest checkoutRequest, int chargeDays) {
+        return getPreDiscountCharge(checkoutRequest, chargeDays).subtract(getDiscountAmount(checkoutRequest, chargeDays));
     }
 }

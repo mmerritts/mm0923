@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class RentalAgreementServiceTest {
+class RequiredTests {
     private final RentalAgreementService rentalAgreementService = new RentalAgreementService();
     private final ToolCreationService toolCreationService = new ToolCreationService();
 

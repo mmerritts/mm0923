@@ -1,4 +1,4 @@
-package tests;
+package tests.extra;
 
 import app.enums.Brand;
 import app.enums.ToolType;
