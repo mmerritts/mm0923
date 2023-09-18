@@ -19,7 +19,6 @@ class RentalAgreementServiceTest {
 
     @Test // Test1
     void testCreateRequestWithDiscountOver100Percent() {
-        //TODO: move this to test class for checkout request
         var testTool = toolCreationService.getToolByToolCode("JAKR");
 
         assertThrows(
