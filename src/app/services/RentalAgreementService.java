@@ -57,6 +57,8 @@ public class RentalAgreementService {
         return chargeDays;
     }
 
+    //TODO: remove getChargeDays() and replace with actual value so charge days
+    // isn't calculated twice. Already called in processCheckoutRequest(...)
     private BigDecimal getPreDiscountCharge(CheckoutRequest checkoutRequest) {
         return checkoutRequest.getTool().getToolRentalInfo().getDailyCharge()
                 .multiply(BigDecimal.valueOf(getChargeDays(checkoutRequest)))
