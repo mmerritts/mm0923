@@ -3,13 +3,16 @@ package tests.extra;
 import app.enums.Brand;
 import app.enums.ToolType;
 import app.services.ToolCreationService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ToolCreationServiceTest {
     private final ToolCreationService toolCreationService = new ToolCreationService();
@@ -20,51 +23,32 @@ class ToolCreationServiceTest {
         assertThrows(IllegalArgumentException.class, () -> toolCreationService.getToolByToolCode(toolCode));
     }
 
-    @Test
-    void testStihlChainsaw() {
-        var testTool = toolCreationService.getToolByToolCode("CHNS");
+    @ParameterizedTest
+    @MethodSource("generateExpectedBrandTypeAndDailyCharge")
+    void testAllValidTools(String toolCode,
+                           String expectedToolType,
+                           String expectedToolBrand,
+                           BigDecimal expectedDailyCharge,
+                           boolean expectedWeekdayCharge,
+                           boolean expectedWeekendCharge,
+                           boolean expectedHolidayCharge) {
+        var testTool = toolCreationService.getToolByToolCode(toolCode);
 
-        assertEquals(ToolType.CHAINSAW, testTool.getToolType());
-        assertEquals(Brand.STIHL, testTool.getBrand());
-        assertEquals(BigDecimal.valueOf(1.49), testTool.getToolRentalInfo().getDailyCharge());
-        assertTrue(testTool.getToolRentalInfo().isWeekdayCharge());
-        assertFalse(testTool.getToolRentalInfo().isWeekendCharge());
-        assertTrue(testTool.getToolRentalInfo().isHolidayCharge());
+        assertEquals(expectedToolType, testTool.getToolType().toString());
+        assertEquals(expectedToolBrand, testTool.getBrand().toString());
+        assertEquals(expectedDailyCharge, testTool.getToolRentalInfo().getDailyCharge());
+        assertEquals(expectedWeekdayCharge, testTool.getToolRentalInfo().isWeekdayCharge());
+        assertEquals(expectedWeekendCharge, testTool.getToolRentalInfo().isWeekendCharge());
+        assertEquals(expectedHolidayCharge, testTool.getToolRentalInfo().isHolidayCharge());
     }
 
-    @Test
-    void testWernerLadder() {
-        var testTool = toolCreationService.getToolByToolCode("LADW");
-
-        assertEquals(ToolType.LADDER, testTool.getToolType());
-        assertEquals(Brand.WERNER, testTool.getBrand());
-        assertEquals(BigDecimal.valueOf(1.99), testTool.getToolRentalInfo().getDailyCharge());
-        assertTrue(testTool.getToolRentalInfo().isWeekdayCharge());
-        assertTrue(testTool.getToolRentalInfo().isWeekendCharge());
-        assertFalse(testTool.getToolRentalInfo().isHolidayCharge());
+    public static Stream<Arguments> generateExpectedBrandTypeAndDailyCharge() {
+        return Stream.of(
+                Arguments.of("CHNS", ToolType.CHAINSAW.toString(), Brand.STIHL.toString(), BigDecimal.valueOf(1.49), true, false, true),
+                Arguments.of("LADW", ToolType.LADDER.toString(), Brand.WERNER.toString(), BigDecimal.valueOf(1.99), true, true, false),
+                Arguments.of("JAKD", ToolType.JACKHAMMER.toString(), Brand.DEWALT.toString(), BigDecimal.valueOf(2.99), true, false, false),
+                Arguments.of("JAKR", ToolType.JACKHAMMER.toString(), Brand.RIDGID.toString(), BigDecimal.valueOf(2.99), true, false, false)
+        );
     }
 
-    @Test
-    void testDeWaltJackHammer() {
-        var testTool = toolCreationService.getToolByToolCode("JAKD");
-
-        assertEquals(ToolType.JACKHAMMER, testTool.getToolType());
-        assertEquals(Brand.DEWALT, testTool.getBrand());
-        assertEquals(BigDecimal.valueOf(2.99), testTool.getToolRentalInfo().getDailyCharge());
-        assertTrue(testTool.getToolRentalInfo().isWeekdayCharge());
-        assertFalse(testTool.getToolRentalInfo().isWeekendCharge());
-        assertFalse(testTool.getToolRentalInfo().isHolidayCharge());
-    }
-
-    @Test
-    void testRidgidJackhammer() {
-        var testTool = toolCreationService.getToolByToolCode("JAKR");
-
-        assertEquals(ToolType.JACKHAMMER, testTool.getToolType());
-        assertEquals(Brand.RIDGID, testTool.getBrand());
-        assertEquals(BigDecimal.valueOf(2.99), testTool.getToolRentalInfo().getDailyCharge());
-        assertTrue(testTool.getToolRentalInfo().isWeekdayCharge());
-        assertFalse(testTool.getToolRentalInfo().isWeekendCharge());
-        assertFalse(testTool.getToolRentalInfo().isHolidayCharge());
-    }
 }
