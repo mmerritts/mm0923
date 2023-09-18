@@ -10,16 +10,20 @@ public class ToolRentalInfo {
     private final boolean holidayCharge;
 
     public ToolRentalInfo(BigDecimal dailyCharge, boolean weekdayCharge, boolean weekendCharge, boolean holidayCharge) {
+        validateDailyCharge(dailyCharge);
+        this.dailyCharge = dailyCharge;
+        this.weekdayCharge = weekdayCharge;
+        this.weekendCharge = weekendCharge;
+        this.holidayCharge = holidayCharge;
+    }
+
+    private static void validateDailyCharge(BigDecimal dailyCharge) {
         Objects.requireNonNull(dailyCharge);
         if (dailyCharge.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Daily Charge request was invalid" +
                     "The Daily Charge request was " + dailyCharge +
                     ". Daily Charge cannot be less than 0");
         }
-        this.dailyCharge = dailyCharge;
-        this.weekdayCharge = weekdayCharge;
-        this.weekendCharge = weekendCharge;
-        this.holidayCharge = holidayCharge;
     }
 
     public BigDecimal getDailyCharge() {

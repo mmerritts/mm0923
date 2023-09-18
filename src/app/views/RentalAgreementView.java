@@ -5,6 +5,7 @@ import app.enums.ToolType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class RentalAgreementView {
     private final String toolCode;
@@ -47,18 +48,21 @@ public class RentalAgreementView {
     }
 
     public void printView() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yy");
+
         System.out.println("Tool Code: " + toolCode);
         System.out.println("Tool Type: " + toolType);
         System.out.println("Tool Brand: " + toolBrand);
         System.out.println("Rental Days: " + rentalDays);
-        System.out.println("Checkout Date: " + checkOutDate);
-        System.out.println("Due Date: " + dueDate);
+        System.out.println("Checkout Date: " + formatter.format(checkOutDate));
+        System.out.println("Due Date: " + formatter.format(dueDate));
         System.out.println("Daily Rental Charge: $" + dailyRentalCharge);
         System.out.println("Charge Days: " + chargeDays);
         System.out.println("Pre-Discount Charge: $" + preDiscountCharge);
-        System.out.println("Discount Percent: " + discountPercent);
+        System.out.println("Discount Percent: " + discountPercent + "%");
         System.out.println("Discount Amount: $" + discountAmount);
         System.out.println("Final Charge: $" + finalCharge);
+        System.out.println();
     }
 
     public String getToolCode() {

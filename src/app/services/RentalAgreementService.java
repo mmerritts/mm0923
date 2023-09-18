@@ -4,6 +4,7 @@ import app.models.CheckoutRequest;
 import app.views.RentalAgreementView;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 public class RentalAgreementService {
@@ -62,14 +63,14 @@ public class RentalAgreementService {
     private BigDecimal getPreDiscountCharge(CheckoutRequest checkoutRequest, int chargeDays) {
         return checkoutRequest.getTool().getToolRentalInfo().getDailyCharge()
                 .multiply(BigDecimal.valueOf(chargeDays))
-                .setScale(2, BigDecimal.ROUND_HALF_UP);
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getDiscountAmount(CheckoutRequest checkoutRequest, int chargeDays) {
         double discountPercent = checkoutRequest.getDiscountPercent() * 0.01;
         return getPreDiscountCharge(checkoutRequest, chargeDays)
                 .multiply(BigDecimal.valueOf(discountPercent))
-                .setScale(2, BigDecimal.ROUND_HALF_UP);
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getFinalCharge(CheckoutRequest checkoutRequest, int chargeDays) {
